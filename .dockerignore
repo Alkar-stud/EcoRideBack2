@@ -4,7 +4,7 @@
 config/secrets/prod/prod.decrypt.private.php
 public/bundles
 var
-vendor
+vendor/*/
 ###< symfony/framework-bundle ###
 
 # Ignorer tout le contenu du dossier uploads
