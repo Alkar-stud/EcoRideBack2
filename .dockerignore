@@ -1,0 +1,14 @@
+
+###> symfony/framework-bundle ###
+.env.*
+config/secrets/prod/prod.decrypt.private.php
+public/bundles
+var
+vendor
+###< symfony/framework-bundle ###
+
+# Ignorer tout le contenu du dossier uploads
+public/uploads
+
+# Default ignored files
+.idea/*
