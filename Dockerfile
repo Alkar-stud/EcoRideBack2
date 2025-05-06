@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl zip pdo pdo_mysql \
+    && docker-php-ext-install intl zip pdo pdo_mysql gd \
     && a2enmod rewrite
 
 # Installe Composer
@@ -40,10 +40,14 @@ RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
 
 RUN composer update
 RUN composer dump-autoload
+
 # Expose le port 8080
 EXPOSE 8080
 # Expose le port 80 pour fly.io
 #EXPOSE 80
-
 # Commande par défaut
 CMD ["apache2-foreground"]
+
+USER www-data
+#RUN php bin/console doctrine:migrations:migrate --no-interaction
+USER root
