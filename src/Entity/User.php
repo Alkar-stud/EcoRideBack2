@@ -4,9 +4,13 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Random\RandomException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -15,52 +19,84 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user_read', 'notice_detail'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['user_login', 'user_read', 'notice_read'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user_login', 'user_read'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
+     * @Assert\NotBlank(message="Le mot de passe ne peut pas être vide.")
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/",
+     *     message="Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial."
+     * )
      */
     #[ORM\Column]
-    private ?string $password = null;
+    private string $password;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user_login', 'user_read', 'trip_read', 'notice_detail'])]
     private ?string $pseudo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user_read'])]
     private ?string $photo = null;
 
     #[ORM\Column]
-    private ?int $credits = 0;
+    #[Groups(['user_read'])]
+    private ?int $credits = null;
 
     #[ORM\Column(nullable: true)]
-    private ?bool $grade = null;
+    #[Groups(['user_read', 'notice_read'])]
+    private ?int $grade = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user_read'])]
     private ?bool $isDriver = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user_read'])]
     private ?bool $isPassenger = null;
 
     #[ORM\Column(length: 64)]
-    private ?string $apiToken = null;
+    #[Groups(['user_login'])]
+    private ?string $apiToken;
 
     #[ORM\Column]
     private ?bool $isActive = true;
 
     #[ORM\Column]
+    #[Groups(['user_read'])]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user_read'])]
     private ?DateTimeImmutable $updatedAt = null;
+
+    /**
+     * @throws RandomException
+     */
+    public function __construct()
+    {
+        $this->apiToken = bin2hex(random_bytes(32));
+        //$this->vehicles = new ArrayCollection();
+        //$this->preferences = new ArrayCollection();
+        //$this->trips = new ArrayCollection();
+        //$this->tripsUsers = new ArrayCollection();
+        //$this->noticesPublisher = new ArrayCollection();
+        //$this->noticesToValidate = new ArrayCollection();
+
+    }
 
     public function getId(): ?int
     {
@@ -91,21 +127,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     * @return list<string>
      */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        // Ajouter le préfixe ROLE_ et convertir en majuscules
+        $roles = array_map(function ($role) {
+            return 'ROLE_' . strtoupper($role);
+        }, $roles);
+
+        // Garantir que chaque utilisateur a au moins ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
     /**
-     * @param list<string> $roles
+     * @param list<array> $roles
      */
     public function setRoles(array $roles): static
     {
+        // Supprimer ROLE_USER s'il est présent
+        $roles = array_filter($roles, function ($role) {
+            return $role !== 'ROLE_USER';
+        });
+
+        // Retirer le préfixe ROLE_ et convertir en minuscules
+        $roles = array_map(function ($role) {
+            return strtolower(preg_replace('/^ROLE_/', '', $role));
+        }, $roles);
+
         $this->roles = $roles;
 
         return $this;
@@ -171,12 +223,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isGrade(): ?bool
+    public function getGrade(): ?int
     {
         return $this->grade;
     }
 
-    public function setGrade(?bool $grade): static
+    public function setGrade(?int $grade): static
     {
         $this->grade = $grade;
 
@@ -212,7 +264,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->apiToken;
     }
 
-    public function setApiToken(string $apiToken): static
+    public function setApiToken(?string $apiToken): static
     {
         $this->apiToken = $apiToken;
 
