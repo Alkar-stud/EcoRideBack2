@@ -32,14 +32,18 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 # Ajoute un ServerName global à Apache
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Installe les dépendances Symfony
-RUN composer install
+# Installe les dépendances Symfony sans exécuter les scripts pour fly.io
+RUN composer install --no-scripts
 
 # Définit les permissions pour le cache et les logs
 RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
 
+RUN composer update
+RUN composer dump-autoload
 # Expose le port 8080
 EXPOSE 8080
+# Expose le port 80 pour fly.io
+#EXPOSE 80
 
 # Commande par défaut
 CMD ["apache2-foreground"]

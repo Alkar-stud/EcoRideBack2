@@ -1,15 +1,15 @@
-# fly.toml app configuration file generated for ecorideback2 on 2025-05-06T15:32:03+02:00
+# fly.toml app configuration file generated for ecorideback2-divine-waterfall-1419 on 2025-05-06T16:03:29+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'ecorideback2'
+app = 'ecorideback2-divine-waterfall-1419'
 primary_region = 'cdg'
 
 [build]
 
 [http_service]
-  internal_port = 8080
+  internal_port = 80
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
