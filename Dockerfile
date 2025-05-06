@@ -49,5 +49,5 @@ EXPOSE 8080
 CMD ["apache2-foreground"]
 
 USER www-data
-#RUN php bin/console doctrine:migrations:migrate --no-interaction
+#RUN  php bin/console doctrine:migrations:migrate --no-interaction
 USER root
