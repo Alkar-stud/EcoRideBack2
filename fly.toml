@@ -16,6 +16,11 @@ min_machines_running = 0
 [env]
 # URL pour NeonDB
 DATABASE_URL="postgresql://neondb_owner:npg_YxopM8S2uDTV@ep-damp-sun-a2i8bz74-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+# URL pour MongoDB
+MONGODB_URL="mongodb+srv://alkar68:Y4gl2ADI2TQprnkZ@ecoride.jxbswe8.mongodb.net"
+MONGODB_HOST="ecoride.jxbswe8.mongodb.net"
+MONGODB_PORT=27017
+MONGODB_DB="ecoride"
 
 [experimental]
 private_network = true
