@@ -1,5 +1,8 @@
 
 ###> symfony/framework-bundle ###
+/.env.local
+/.env.dev
+/.env.test
 config/secrets/prod/prod.decrypt.private.php
 public/bundles
 var
