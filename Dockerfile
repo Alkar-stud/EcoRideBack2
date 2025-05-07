@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl zip pdo pdo_mysql gd \
+    && docker-php-ext-install intl zip pdo pdo_mysql pdo_pgsql gd \
     && a2enmod rewrite
 
 # Installe Composer
