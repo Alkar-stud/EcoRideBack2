@@ -1,16 +1,16 @@
 
 ###> symfony/framework-bundle ###
 /.env.local
-/.env.dev
-/.env.test
-config/secrets/prod/prod.decrypt.private.php
-public/bundles
-var
-vendor/*/
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/public/uploads//photos/*.*
+/var/
+/vendor/
 ###< symfony/framework-bundle ###
+/.idea/*
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
 
-# Ignorer tout le contenu du dossier uploads
-public/uploads
 
-# Default ignored files
-.idea/*

@@ -74,7 +74,7 @@ final class SecurityController extends AbstractController
     )]
     #[OA\Response(
         response: 400,
-        description: 'Mot de passe pas assez complexe : au moins 1 "long", "uppercase", "lowercase", "digit" ou "special" character ou il manque le pseudo'
+        description: 'Le mot de passe doit contenir au moins 10 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial. Ou il manque le pseudo'
     )]
     #[OA\Response(
         response: 409,
