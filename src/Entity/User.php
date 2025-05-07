@@ -14,6 +14,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\Table(name: '"user"')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -96,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->apiToken = bin2hex(random_bytes(32));
-        //$this->preferences = new ArrayCollection();
+        $this->preferences = new ArrayCollection();
         //$this->vehicles = new ArrayCollection();
         //$this->trips = new ArrayCollection();
         //$this->tripsUsers = new ArrayCollection();

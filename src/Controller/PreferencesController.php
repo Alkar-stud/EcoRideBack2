@@ -66,7 +66,7 @@ final class PreferencesController extends AbstractController
     {
         $preferences = $this->serializer->deserialize($request->getContent(), Preferences::class, 'json');
         $preferences->setCreatedAt(new DateTimeImmutable());
-        $preferences->setUser($user);
+        $preferences->setUserPreferences($user);
         $preferences->setLibelle($preferences->getLibelle());
 
         $this->manager->persist($preferences);
@@ -78,7 +78,7 @@ final class PreferencesController extends AbstractController
                 'libelle'  => $preferences->getLibelle(),
                 'description' => $preferences->getDescription(),
                 'createdAt' => $preferences->getCreatedAt(),
-                'userId' => $preferences->getUser()->getId()
+                'userId' => $preferences->getUserPreferences()->getId()
             ],
             Response::HTTP_CREATED
         );
@@ -96,7 +96,7 @@ final class PreferencesController extends AbstractController
     )]
     public function showAll(#[CurrentUser] ?User $user): JsonResponse
     {
-        $preferences = $this->repository->findBy(['user' => $user->getId()]);
+        $preferences = $this->repository->findBy(['userPreferences' => $user->getId()]);
 
         if ($preferences) {
             $responseData = $this->serializer->serialize(
@@ -127,7 +127,7 @@ final class PreferencesController extends AbstractController
     public function showById(#[CurrentUser] ?User $user, int $id): JsonResponse
     {
 
-        $preferences = $this->repository->findOneBy(['id' => $id, 'user' => $user->getId()]);
+        $preferences = $this->repository->findOneBy(['id' => $id, 'userPreferences' => $user->getId()]);
         if ($preferences) {
             $responseData = $this->serializer->serialize($preferences, 'json', ['groups' => ['preferences_user']]);
 
@@ -168,7 +168,7 @@ final class PreferencesController extends AbstractController
     )]
     public function edit(#[CurrentUser] ?User $user, int $id, Request $request): JsonResponse
     {
-        $preferences = $this->repository->findOneBy(['id' => $id , 'user' => $user->getId()]);
+        $preferences = $this->repository->findOneBy(['id' => $id , 'userPreferences' => $user->getId()]);
 
         if ($preferences) {
             $preferences = $this->serializer->deserialize(
@@ -205,7 +205,7 @@ final class PreferencesController extends AbstractController
     )]
     public function delete(#[CurrentUser] ?User $user, int $id): JsonResponse
     {
-        $preferences = $this->repository->findOneBy(['id' => $id, 'user' => $user->getId()]);
+        $preferences = $this->repository->findOneBy(['id' => $id, 'userPreferences' => $user->getId()]);
         if ($preferences) {
             //On ne supprime pas smokingAllowed et petsAllowed
             if ($preferences->getLibelle() === 'smokingAllowed' || $preferences->getLibelle() === 'petsAllowed') {

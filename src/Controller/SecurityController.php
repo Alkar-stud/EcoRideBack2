@@ -118,13 +118,13 @@ final class SecurityController extends AbstractController
         $smokingPreference = new Preferences();
         $smokingPreference->setLibelle('smokingAllowed');
         $smokingPreference->setDescription('no');
-        $smokingPreference->setUser($user);
+        $smokingPreference->setUserPreferences($user);
         $smokingPreference->setCreatedAt(new DateTimeImmutable());
 
         $petsPreference = new Preferences();
         $petsPreference->setLibelle('petsAllowed');
         $petsPreference->setDescription('no');
-        $petsPreference->setUser($user);
+        $petsPreference->setUserPreferences($user);
         $petsPreference->setCreatedAt(new DateTimeImmutable());
         //Création des préférences pour le user
         $this->manager->persist($smokingPreference);
