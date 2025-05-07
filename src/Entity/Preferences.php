@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PreferencesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: PreferencesRepository::class)]
 class Preferences
@@ -12,12 +13,15 @@ class Preferences
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user_read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['user_read'])]
     private ?string $libelle = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['user_read'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'preferences')]
