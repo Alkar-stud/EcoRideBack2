@@ -1,6 +1,7 @@
 
 ###> symfony/framework-bundle ###
 /.env.*
+/.env.prod
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /public/uploads//photos/*.*
