@@ -4,7 +4,11 @@
 /.env.docker
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/public/uploads//photos/*.*
+# Ignorer tout le contenu du dossier photos
+/public/uploads/photos/*
+# Mais pas le dossier lui-même (via un fichier .gitkeep)
+!/public/uploads/photos/.gitkeep
+
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
