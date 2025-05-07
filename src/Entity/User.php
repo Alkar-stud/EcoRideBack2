@@ -83,12 +83,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user_read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
-    /**
-     * @var Collection<int, Preferences>
-     */
-    #[ORM\OneToMany(targetEntity: Preferences::class, mappedBy: 'user', orphanRemoval: true)]
-    #[Groups(['user_read'])]
-    private Collection $preferences;
 
     /**
      * @throws RandomException
@@ -96,7 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->apiToken = bin2hex(random_bytes(32));
-        $this->preferences = new ArrayCollection();
+        //$this->preferences = new ArrayCollection();
         //$this->vehicles = new ArrayCollection();
         //$this->trips = new ArrayCollection();
         //$this->tripsUsers = new ArrayCollection();
@@ -314,33 +308,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Preferences>
-     */
-    public function getPreferences(): Collection
-    {
-        return $this->preferences;
-    }
-
-    public function addPreference(Preferences $preference): static
-    {
-        if (!$this->preferences->contains($preference)) {
-            $this->preferences->add($preference);
-            $preference->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removePreference(Preferences $preference): static
-    {
-        if ($this->preferences->removeElement($preference)) {
-            // set the owning side to null (unless already changed)
-            if ($preference->getUser() === $this) {
-                $preference->setUser(null);
-            }
-        }
-
-        return $this;
-    }
 }
