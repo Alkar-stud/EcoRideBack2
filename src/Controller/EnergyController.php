@@ -27,7 +27,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[OA\Tag(name: 'Energy')]
 final class EnergyController extends AbstractController{
 
-
     public function __construct(
         private readonly EntityManagerInterface $manager,
         private readonly EnergyRepository       $repository,
@@ -35,7 +34,6 @@ final class EnergyController extends AbstractController{
         private readonly ValidatorInterface     $validator
     )
     {
-
     }
     #[Route('/add', name: 'add', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
@@ -202,7 +200,6 @@ final class EnergyController extends AbstractController{
     )]
     public function delete(Energy $energy): JsonResponse // Injection directe de l'entité
     {
-
         $this->manager->remove($energy);
         $this->manager->flush();
 

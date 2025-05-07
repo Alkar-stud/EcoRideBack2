@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EnergyRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: EnergyRepository::class)]
 class Energy
@@ -15,9 +16,11 @@ class Energy
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['vehicle_read'])]
     private ?string $libelle = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['vehicle_read'])]
     private ?bool $isEco = null;
 
     #[ORM\Column]
