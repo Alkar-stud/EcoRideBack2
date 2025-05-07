@@ -7,4 +7,7 @@ nelmio_cors:
         expose_headers: ['Link']
         max_age: 3600
     paths:
-        '^/': null
+        '^/uploads/photos/': # Chemin vers vos photos
+            allow_origin: ['*']
+            allow_headers: ['*']
+            allow_methods: ['GET']
