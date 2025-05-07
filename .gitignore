@@ -1,8 +1,10 @@
 
 ###> symfony/framework-bundle ###
-/.env.*
+/.env.local
+/.env.docker
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/uploads//photos/*.*
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
@@ -12,7 +14,4 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
+
