@@ -12,8 +12,12 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl zip pdo pdo_mysql pdo_pgsql gd \
+    && docker-php-ext-install intl zip pdo pdo_pgsql gd \
     && a2enmod rewrite
+
+# Installation de l'extension MongoDB pour PHP
+RUN pecl install mongodb && docker-php-ext-enable mongodb
+
 
 # Installe Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -44,7 +48,7 @@ RUN composer update
 RUN composer dump-autoload
 
 USER root
-# Expose le port 8080
+# Expose le port 8080 en local si apache déjà lancé
 #EXPOSE 8080
 # Expose le port 80 pour fly.io
 EXPOSE 80

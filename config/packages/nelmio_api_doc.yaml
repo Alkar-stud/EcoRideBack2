@@ -19,7 +19,7 @@ nelmio_api_doc:
             disable_default_routes: false
             with_attribute: false
         ecoride:
-            name_patterns: [ ecoride, energy ]
+            name_patterns: [ ecoride ]
             with_attribute: true # must be true to only display in /api/doc/ecoride
             documentation:
                 info:

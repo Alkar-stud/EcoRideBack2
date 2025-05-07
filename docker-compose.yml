@@ -12,33 +12,53 @@ services:
       - .:/var/www/html
     depends_on:
       - db
+      - mongo
 
   db:
-    image: mysql:8.0
-    container_name: mysql
+    image: postgres:17.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ecoride
-      MYSQL_USER: ecoride
-      MYSQL_PASSWORD: 'ePStl]LoOamt8dZ2'
+      POSTGRES_DB: ecoride
+      POSTGRES_USER: ecoride
+      POSTGRES_PASSWORD: 'ePStl]LoOamt8dZ2'
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "3307:3306"
+      - "5433:5432"
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    #container_name: phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4
     restart: always
     environment:
-      PMA_HOST: db
-      PMA_USER: ecoride
-      PMA_PASSWORD: 'ePStl]LoOamt8dZ2'
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 'ePStl]LoOamt8dZ2'
     ports:
       - "8081:80"
     depends_on:
       - db
 
+  mongo:
+    image: mongo:7.0
+    restart: always
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27018:27017"
+    # Si vous avez besoin d'authentification, dé commentez ces lignes :
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: username
+    #   MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8082:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+    depends_on:
+      - mongo
+
 volumes:
-  mysql_data:
+  postgres_data:
+  mongo_data:
