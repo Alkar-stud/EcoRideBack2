@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     timezone: '%env(APP_TIMEZONE)%'
+    env(MONGODB_URL): ''
+    env(MONGODB_DB): ''
 
 services:
     # default configuration for services in *this* file
@@ -21,5 +23,9 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Service\TripMongoService:
+        arguments:
+            $mongoUri: '%env(MONGODB_URL)%'
+            $databaseName: '%env(MONGODB_DB)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

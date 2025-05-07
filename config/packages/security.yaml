@@ -15,7 +15,18 @@ security:
             security: false
         main:
             lazy: true
+            stateless: true
             provider: app_user_provider
+            json_login:
+                check_path: app_api_login
+                username_path: email
+                password_path: password
+            custom_authenticators:
+                - App\Security\ApiTokenAuthenticator
+            login_throttling:
+                max_attempts: 5
+            entry_point: App\Security\CustomAuthenticationEntryPoint
+            access_denied_handler: App\Security\CustomAccessDeniedHandler
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -26,8 +37,21 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/api/registration, roles : PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/notice/list, roles: PUBLIC_ACCESS }
+        - { path: ^/api/trip/guest, roles: PUBLIC_ACCESS }
+        - { path: ^/api/notice/, roles: ROLE_USER }
+        #- { path: ^/api/doc/ecoride, roles: ROLE_ADMIN }
+        - { path: ^/api/doc, roles : PUBLIC_ACCESS }
+        - { path: ^/api/mail, roles: ROLE_ADMIN }
+        - { path: ^/api/notice/status, roles: ROLE_ADMIN }
+        - { path: ^/api, roles: [ROLE_USER, ROLE_EMPLOYEE] }
         # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/employee, roles: ROLE_EMPLOYEE }
         # - { path: ^/profile, roles: ROLE_USER }
+    role_hierarchy:
+        ROLE_ADMIN:         ROLE_EMPLOYEE
 
 when@test:
     security:
