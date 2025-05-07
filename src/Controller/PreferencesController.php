@@ -92,7 +92,7 @@ final class PreferencesController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'Préférences trouvées avec succès',
-        content: new Model(type: Preferences::class, groups: ['preferences_user'])
+        content: new Model(type: Preferences::class, groups: ['user_read'])
     )]
     public function showAll(#[CurrentUser] ?User $user): JsonResponse
     {
@@ -102,7 +102,7 @@ final class PreferencesController extends AbstractController
             $responseData = $this->serializer->serialize(
                 $preferences,
                 'json',
-                ['groups' => ['preferences_user']]
+                ['groups' => ['user_read']]
             );
 
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
@@ -122,14 +122,14 @@ final class PreferencesController extends AbstractController
     #[OA\Response(
         response: 200,
         description: 'Préférence trouvée avec succès',
-        content: new Model(type: Preferences::class, groups: ['preferences_user'])
+        content: new Model(type: Preferences::class, groups: ['user_read'])
     )]
     public function showById(#[CurrentUser] ?User $user, int $id): JsonResponse
     {
 
         $preferences = $this->repository->findOneBy(['id' => $id, 'userPreferences' => $user->getId()]);
         if ($preferences) {
-            $responseData = $this->serializer->serialize($preferences, 'json', ['groups' => ['preferences_user']]);
+            $responseData = $this->serializer->serialize($preferences, 'json', ['groups' => ['user_read']]);
 
             return new JsonResponse($responseData, Response::HTTP_OK, [], true);
         }
