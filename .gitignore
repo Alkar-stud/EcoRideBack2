@@ -1,10 +1,6 @@
 
 ###> symfony/framework-bundle ###
-/.env.local
-/.env.test
-/.env.dev
-/.env.prod
-/.env.docker
+/.env.*
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 # Ignorer tout le contenu du dossier photos
