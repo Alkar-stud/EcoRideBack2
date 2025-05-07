@@ -181,7 +181,7 @@ final class EnergyController extends AbstractController{
         $this->manager->flush();
 
         // Retourner l'entité mise à jour
-        return $this->json($existingEnergy, Response::HTTP_OK, [], ['groups' => 'energy:read']);
+        return $this->json($existingEnergy, Response::HTTP_OK, []);
     }
 
 
