@@ -83,6 +83,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user_read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, Preferences>
+     */
+    #[ORM\OneToMany(targetEntity: Preferences::class, mappedBy: 'userPreferences', orphanRemoval: true)]
+    private Collection $preferences;
+
 
     /**
      * @throws RandomException
@@ -304,6 +310,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUpdatedAt(?DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Preferences>
+     */
+    public function getPreferences(): Collection
+    {
+        return $this->preferences;
+    }
+
+    public function addPreference(Preferences $preference): static
+    {
+        if (!$this->preferences->contains($preference)) {
+            $this->preferences->add($preference);
+            $preference->setUserPreferences($this);
+        }
+
+        return $this;
+    }
+
+    public function removePreference(Preferences $preference): static
+    {
+        if ($this->preferences->removeElement($preference)) {
+            // set the owning side to null (unless already changed)
+            if ($preference->getUserPreferences() === $this) {
+                $preference->setUserPreferences(null);
+            }
+        }
 
         return $this;
     }
