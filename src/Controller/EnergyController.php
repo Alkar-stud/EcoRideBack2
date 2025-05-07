@@ -21,15 +21,18 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/energy', name: 'app_api_energy_')]
 #[OA\Tag(name: 'Energy')]
 final class EnergyController extends AbstractController{
 
+
     public function __construct(
         private readonly EntityManagerInterface $manager,
         private readonly EnergyRepository       $repository,
         private readonly SerializerInterface    $serializer,
+        private readonly ValidatorInterface     $validator
     )
     {
 
@@ -58,18 +61,24 @@ final class EnergyController extends AbstractController{
     )]
     #[OA\Response(
         response: 201,
-        description: 'Préférence ajoutée avec succès',
+        description: 'Énergie ajoutée avec succès',
         content: new Model(type: Energy::class)
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Données invalides'
     )]
     public function add(Request $request): JsonResponse
     {
+        /** @var Energy $energy */
         $energy = $this->serializer->deserialize($request->getContent(), Energy::class, 'json');
         $energy->setCreatedAt(new DateTimeImmutable());
 
-        // Convertir le champ "libelle" pour qu'il ait une seule majuscule au premier caractère, même avec des accents
-        $libelle = $energy->getLibelle();
-        $formattedLibelle = mb_convert_case($libelle, MB_CASE_TITLE, "UTF-8");
-        $energy->setLibelle($formattedLibelle);
+        // Validation
+        $errors = $this->validator->validate($energy);
+        if (count($errors) > 0) {
+            return $this->json($errors, Response::HTTP_BAD_REQUEST);
+        }
 
         $this->manager->persist($energy);
         $this->manager->flush();
@@ -81,7 +90,7 @@ final class EnergyController extends AbstractController{
                 'isEco' => $energy->isEco(),
                 'createdAt' => $energy->getCreatedAt()
             ],
-            Response::HTTP_OK
+            Response::HTTP_CREATED
         );
     }
     #[Route('/list/', name: 'showAll', methods: 'GET')]
@@ -99,16 +108,7 @@ final class EnergyController extends AbstractController{
     {
         $energies = $this->repository->findBy([], ['isEco' => 'DESC', 'libelle' => 'ASC']);
 
-        if ($energies) {
-            $responseData = $this->serializer->serialize(
-                $energies,
-                'json'
-            );
-
-            return new JsonResponse($responseData, Response::HTTP_OK, [], true);
-        }
-
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        return $this->json($energies, Response::HTTP_OK, []);
     }
 
     #[Route('/{id}', name: 'show', methods: 'GET')]
@@ -126,18 +126,10 @@ final class EnergyController extends AbstractController{
         response: 404,
         description: 'Énergie non trouvée'
     )]
-    public function showById(int $id): JsonResponse
+    public function showById(Energy $energy): JsonResponse
     {
-        $energy = $this->repository->findOneBy(['id' => $id]);
-        if ($energy) {
-            $responseData = $this->serializer->serialize($energy, 'json');
-
-            return new JsonResponse($responseData, Response::HTTP_OK, [], true);
-        }
-
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        return $this->json($energy, Response::HTTP_OK, []);
     }
-
 
     #[Route('/{id}', name: 'edit', methods: ['PUT'])]
     #[IsGranted('ROLE_ADMIN')]
@@ -163,45 +155,33 @@ final class EnergyController extends AbstractController{
     )]
     #[OA\Response(
         response: 404,
-        description: 'Paramètre non trouvé'
+        description: 'Type d\'énergie non trouvé'
     )]
     #[OA\Response(
         response: 200,
-        description: 'Paramètre modifié avec succès',
-        content: new Model(type: Energy::class)
+        description: 'Type d\'énergie modifié avec succès'
     )]
-    public function edit(int $id, Request $request): JsonResponse
+    public function edit(Energy $existingEnergy, Request $request): JsonResponse
     {
-        $energy = $this->repository->findOneBy(['id' => $id]);
+        $this->serializer->deserialize(
+            $request->getContent(),
+            Energy::class,
+            'json',
+            [AbstractNormalizer::OBJECT_TO_POPULATE => $existingEnergy]
+        );
 
-        if ($energy) {
-            $energy = $this->serializer->deserialize(
-                $request->getContent(),
-                Energy::class,
-                'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $energy]
-            );
-            // Convertir le champ "libelle" pour qu'il ait une seule majuscule au premier caractère, même avec des accents
-            $libelle = $energy->getLibelle();
-            $formattedLibelle = mb_convert_case($libelle, MB_CASE_TITLE, "UTF-8");
-            $energy->setLibelle($formattedLibelle);
-            $energy->setUpdatedAt(new DateTimeImmutable());
+        $existingEnergy->setUpdatedAt(new DateTimeImmutable());
 
-            $this->manager->flush();
-
-            return new JsonResponse(
-                [
-                    'id'  => $energy->getId(),
-                    'libelle'  => $energy->getLibelle(),
-                    'isEco' => $energy->isEco(),
-                    'createdAt' => $energy->getCreatedAt(),
-                    'updateAt' => $energy->getUpdatedAt()
-                ],
-                Response::HTTP_OK
-            );
+        // Validation
+        $errors = $this->validator->validate($existingEnergy);
+        if (count($errors) > 0) {
+            return $this->json($errors, Response::HTTP_BAD_REQUEST);
         }
 
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        $this->manager->flush();
+
+        // Retourner l'entité mise à jour
+        return $this->json($existingEnergy, Response::HTTP_OK, [], ['groups' => 'energy:read']);
     }
 
 
@@ -218,19 +198,14 @@ final class EnergyController extends AbstractController{
     )]
     #[OA\Response(
         response: 404,
-        description: 'Paramètre non trouvé'
+        description: 'Type d\'énergie non trouvé'
     )]
-    public function delete(int $id): JsonResponse
+    public function delete(Energy $energy): JsonResponse // Injection directe de l'entité
     {
-        $energy = $this->repository->findOneBy(['id' => $id]);
-        if ($energy) {
-            $this->manager->remove($energy);
-            $this->manager->flush();
 
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        }
+        $this->manager->remove($energy);
+        $this->manager->flush();
 
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }
