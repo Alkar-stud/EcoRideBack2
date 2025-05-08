@@ -21,7 +21,7 @@ jobs:
           # Server port to connect to (read your web hosts docs)
           port: 22
           # protocol to deploy with - ftp, ftps, or ftps-legacy
-          protocol: sftp
+          protocol: ftps-legacy
           # Folder to upload from, must end with trailing slash /
           #local-dir: # optional
           # Path to upload to on the server. Must end with trailing slash /
