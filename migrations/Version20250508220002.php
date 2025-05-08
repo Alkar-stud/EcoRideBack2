@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250508191422 extends AbstractMigration
+final class Version20250508220002 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -32,6 +32,10 @@ final class Version20250508191422 extends AbstractMigration
             INSERT INTO `energy` (`libelle`, `is_eco`, `created_at`) VALUES ('Électrique', 1, NOW()), ('Hybride', NULL, NOW()), ('GPL', NULL, NOW()), ('Essence', NULL, NOW()), ('Diesel', NULL, NOW())
         SQL);
         
+        $this->addSql(<<<'SQL'
+            INSERT INTO `mail` (`type_mail`, `subject`, `content`, `created_at`) VALUES ('cancel', 'EcoRide - Annulation du covoiturage du {date} vers {arrivalAddress}', 'Bonjour {pseudo}, <br> le covoitugrage a été annulé.', NOW()), ('passengerValidation', 'EcoRide - Comment s&#039;est passé votre covoiturage ?', 'Bonjour {pseudo}, &lt;br&gt; Covoiturage du {date} vers &lt;b&gt;{arrivalAddress}&lt;/b&gt;.&lt;br&gt;Vous devez le valider et si vous souhaitez donner votre avis en &lt;a href=&quot;{host}/giveYourOpinion?{id}&quot;&gt;cliquant ici&lt;/a&gt;.&lt;br&gt;Vous pouvez aussi nous indiquer s&#039;il s&#039;est mal passé.&lt;br&gt;&lt;br&gt;À bientôt !', NOW()), ('accountUserCreate', 'EcoRide - Bienvenue chez nous', 'Bienvenue chez nous !', NOW()), ('forgotPasword', 'EcoRide - Vous avez oublié votre mot de passe ?', 'Bonjour, <br />br&gt;veuillez trouver ci dessous votre mot de passe temporaire.', NOW()), ('changeTripVehicle', 'EcoRide - Changement de véhicule pour le covoiturage', 'Bonjour {pseudo}, \n<br>\nle chauffeur a changé de véhicule pour un {brand} {model} de couleur {color}.\nLe tarif reste inchangé.', NOW())
+        SQL);
+        
     }
 
     public function down(Schema $schema): void
@@ -47,6 +51,10 @@ final class Version20250508191422 extends AbstractMigration
         
         $this->addSql(<<<'SQL'
             TRUNCATE TABLE energy
+        SQL);
+        
+        $this->addSql(<<<'SQL'
+            TRUNCATE TABLE mail
         SQL);
     }
 }
