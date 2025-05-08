@@ -15,23 +15,24 @@ services:
       - mongo
 
   db:
-    image: postgres:17.0
+    image: mysql:8.0
     restart: always
     environment:
-      POSTGRES_DB: ecoride
-      POSTGRES_USER: ecoride
-      POSTGRES_PASSWORD: 'ePStl]LoOamt8dZ2'
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: ecoride
+      MYSQL_USER: ecoride
+      MYSQL_PASSWORD: 'ePStl]LoOamt8dZ2'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     ports:
-      - "5433:5432"
+      - "3307:3306"
 
-  pgadmin:
-    image: dpage/pgadmin4
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: 'ePStl]LoOamt8dZ2'
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: your_root_password
     ports:
       - "8081:80"
     depends_on:
@@ -60,5 +61,5 @@ services:
       - mongo
 
 volumes:
-  postgres_data:
+  mysql_data:
   mongo_data:

@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install intl zip pdo pdo_pgsql gd \
+    && docker-php-ext-install intl zip pdo pdo_mysql gd \
     && a2enmod rewrite
 
 # Installation de l'extension MongoDB pour PHP
