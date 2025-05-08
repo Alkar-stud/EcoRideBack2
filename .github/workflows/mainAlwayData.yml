@@ -13,13 +13,13 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           # ftp server
-          server: ssh-ecorideback.alwaysdata.net
+          server: ftp-ecorideback.alwaysdata.net
           # ftp username
-          username: ecorideback_sftp
+          username: ecorideback_ftp
           # ftp password
           password: ${{ secrets.FTP_PASSWORD_ALWAYSDATA }}
           # Server port to connect to (read your web hosts docs)
-          port: 22
+          port: 21
           # protocol to deploy with - ftp, ftps, or ftps-legacy
           protocol: ftps-legacy
           # Folder to upload from, must end with trailing slash /
