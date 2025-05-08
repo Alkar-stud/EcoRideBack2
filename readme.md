@@ -1,29 +1,18 @@
-# Ecoride
+# Ecoride - BackEnd
 
-## Presentation
-This project is carried out within the framework of the ECF of Studi.
+## Présentation
+Ce projet est réalisé dans le cadre de l'ECF de Studi.
 
-## Prerequisites
-* apache2.4^, php 8.3^ and mysql8^ must be installed
-* Check composer is installed
+## Pré-requis
+* Docker doit être installé sur la machine hôte
 
-## Install
-1. Clone this project
-2. Extension php mongodb must be installed. Run if not `pecl install mongodb`
-3. Run `composer install`
-4. Run `symfony server:start -d` to launch your local php web server
-
-## Database
-1. Create a new ".env.local" file at the root of the project and copy the ".env" file content inside of it.
-2. Comment the "postgresql" line (32) and uncomment the "sql" line (31)
-3. Enter your username, your password and the name of your database on the dedicated places to configure the access of your sql database.
-4. Run `php bin/console doctrine:database:create` to create your local database.
-5. Run `php bin/console doctrine:maigrations:migrate` to update the database.
-6. Run `php bin/console doctrine:fixtures:load` to load the fixtures.
+## Installation
+1. Cloner le projet
+2. Créer un fichier ".env.docker" à la racine du projet en prenant comme modèle le ".env"
+3. Dans le répertoire du projet, lancer `docker compose up -d --build`
+4. Puis `docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction`
 
 
-Wait a moment and visit http://localhost:8000
-
-## With docker
-1. Run `docker compose up -d --build`
-2. Run `docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction`
+Une fois l'installation terminée, le backend est disponible ici http://localhost:8000.
+Vous avez accès à un gestionnaire de PostGreSQL à l'adresse http://localhost:8081,  
+et un accès à un gestionnaire MongoDB à l'adresse http://localhost:8082. 

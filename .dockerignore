@@ -3,9 +3,10 @@
 /.env.local
 /.env.prod
 /.env.dev
+/.env.docker
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/public/uploads//photos/*.*
+/public/uploads/photos/*.*
 /var/
 /vendor/
 ###< symfony/framework-bundle ###

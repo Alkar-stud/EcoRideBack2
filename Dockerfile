@@ -18,12 +18,16 @@ RUN apt-get update && apt-get install -y \
 # Installation de l'extension MongoDB pour PHP
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 
-
 # Installe Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Définit le répertoire de travail
 WORKDIR /var/www/html
+
+# Monter le secret et installer les dépendances
+#RUN --mount=type=secret,id=.env.docker \
+#    npm install --config /run/secrets/config \
+
 
 # Copie les fichiers de l'application
 COPY . .
@@ -48,13 +52,7 @@ RUN composer update
 RUN composer dump-autoload
 
 USER root
-# Expose le port 8080 en local si apache déjà lancé
-#EXPOSE 8080
-# Expose le port 80 pour fly.io
-EXPOSE 80
+# Expose le port 8080 car le port 80 peut être déjà utilisé sur la machine hôte
+EXPOSE 8080
 # Commande par défaut
 CMD ["apache2-foreground"]
-
-USER www-data
-#RUN  php bin/console doctrine:migrations:migrate --no-interaction
-USER root

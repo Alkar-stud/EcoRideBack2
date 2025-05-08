@@ -33,11 +33,11 @@ final class Version20250507141349 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            TRUNCATE TABLE user
+            TRUNCATE TABLE public.user
         SQL);
 
         $this->addSql(<<<'SQL'
-            TRUNCATE TABLE eco_ride
+            TRUNCATE TABLE public.eco_ride
         SQL);
     }
 }
