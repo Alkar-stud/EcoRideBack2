@@ -13,5 +13,5 @@ jobs:
       with:
         target-server: ssh-ecorideback.alwaysdata.net
         remote-user: ecorideback
-        private-ssh-key: ${{ secrets.SSH_KEY_RSA_ALWAYSDATA }}
+        private-ssh-key: ${{ secrets.FTP_PASSWORD_ALWAYSDATA }}
         destination-path: /www/
