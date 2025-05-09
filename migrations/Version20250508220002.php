@@ -29,7 +29,7 @@ final class Version20250508220002 extends AbstractMigration
         SQL);
         
         $this->addSql(<<<'SQL'
-            INSERT INTO `energy` (`libelle`, `is_eco`, `created_at`) VALUES ('Électrique', 1, NOW()), ('Hybride', NULL, NOW()), ('GPL', NULL, NOW()), ('Essence', NULL, NOW()), ('Diesel', NULL, NOW())
+            INSERT INTO `energy` (`libelle`, `is_eco`, `created_at`) VALUES ('Électrique', 1, NOW()), ('Hybride', NULL, NOW()), ('Énergie fossile', NULL, NOW())
         SQL);
         
         $this->addSql(<<<'SQL'

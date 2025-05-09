@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[ORM\Table(name: '"user"')]
+#[ORM\Table(name: 'user')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -87,14 +87,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Preferences>
      */
-    #[ORM\OneToMany(targetEntity: Preferences::class, mappedBy: 'userPreferences', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Preferences::class, mappedBy: 'userPreferences', cascade: ['persist', 'remove'], orphanRemoval: true)]
+
     #[Groups(['user_read'])]
     private Collection $preferences;
 
     /**
      * @var Collection<int, Vehicle>
      */
-    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'owner', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Vehicle::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['user_read'])]
     private Collection $vehicles;
 
