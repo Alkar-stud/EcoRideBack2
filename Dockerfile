@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl zip pdo pdo_mysql gd \
-    && a2enmod rewrite
+    && a2enmod rewrite \
+    && a2enmod ssl \
+    && a2enmod headers
 
 # Installation de l'extension MongoDB pour PHP
 RUN pecl install mongodb && docker-php-ext-enable mongodb

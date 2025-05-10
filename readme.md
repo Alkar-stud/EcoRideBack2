@@ -16,3 +16,5 @@ Ce projet est réalisé dans le cadre de l'ECF de Studi.
 Une fois l'installation terminée, le backend est disponible ici http://localhost:8000.
 Vous avez accès à un gestionnaire de PostGreSQL à l'adresse http://localhost:8081,  
 et un accès à un gestionnaire MongoDB à l'adresse http://localhost:8082. 
+
+Le dossier local étant monté dans le conteneur, le développement se fait sans avoir à reconstruire l'image
