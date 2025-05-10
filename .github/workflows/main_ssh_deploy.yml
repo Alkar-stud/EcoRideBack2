@@ -1,5 +1,6 @@
-on: push
 name: Publish Website SSH
+on: 
+  push:
 jobs:
   web-deploy:
     name: 🚀 Deploy Website Every Commit
@@ -14,4 +15,6 @@ jobs:
         target-server: ssh-ecorideback.alwaysdata.net
         remote-user: ecorideback
         private-ssh-key: ${{ secrets.SSH_KEY_RSA_ALWAYSDATA }}
+        ssh-port: 22
         destination-path: /test/
+        rsync-options: --dry-run --archive --verbose --compress --delete-after --human-readable --exclude=.git* --exclude=.git/ --exclude=README.md --exclude=readme.md --exclude=.gitignore
