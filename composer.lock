@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39578979ff990b00f1fe419ecdef82e6",
+    "content-hash": "b2f032500a820f66eee1d211bbacbdcf",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -7059,6 +7059,54 @@
                 }
             ],
             "time": "2025-04-29T12:36:36+00:00"
+        },
+        {
+            "name": "nakato53/symfony-vercel-bundle",
+            "version": "0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Nakato53/symfony-vercel-bundle.git",
+                "reference": "19f98fb783154676cc1f0e830ce4b9dc939d4945"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Nakato53/symfony-vercel-bundle/zipball/19f98fb783154676cc1f0e830ce4b9dc939d4945",
+                "reference": "19f98fb783154676cc1f0e830ce4b9dc939d4945",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/console": "^7.0",
+                "symfony/dependency-injection": "^6.3|^7.0",
+                "symfony/filesystem": "^7.0",
+                "symfony/framework-bundle": "^6.3|^7.0",
+                "symfony/http-kernel": "^6.3|^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Nakato53\\Vercel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nakato53",
+                    "email": "nakato53@gmail.com"
+                }
+            ],
+            "description": "Install vercel runtime for Symfony",
+            "support": {
+                "issues": "https://github.com/Nakato53/symfony-vercel-bundle/issues",
+                "source": "https://github.com/Nakato53/symfony-vercel-bundle/tree/0.5"
+            },
+            "time": "2024-02-07T17:22:33+00:00"
         },
         {
             "name": "pelmered/fake-car",

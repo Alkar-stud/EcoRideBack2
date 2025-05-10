@@ -38,6 +38,9 @@
             "migrations/.gitignore"
         ]
     },
+    "nakato53/symfony-vercel-bundle": {
+        "version": "0.5"
+    },
     "nelmio/api-doc-bundle": {
         "version": "5.0",
         "recipe": {
