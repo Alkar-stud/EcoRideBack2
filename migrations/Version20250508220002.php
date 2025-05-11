@@ -21,7 +21,7 @@ final class Version20250508220002 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
        $this->addSql(<<<'SQL'
-            INSERT INTO user (email, roles, password, pseudo, credits, api_token, is_active, created_at) VALUES ('admin@ecoride.fr', '["admin"]', '$2y$13$r.iH55Y3TpA3MJKo7DeMpu0n1h1nYEBsBltwWuQTHR1r9rN/.btUS', 'Admin', 0, '86135ae9-54e8-46a7-997c-f3dd345d8b5d48cada49fd53e8b20070', true, NOW())
+            INSERT INTO user (email, roles, password, pseudo, credits, api_token, is_active, created_at, is_verified) VALUES ('admin@ecoride.fr', '["admin"]', '$2y$13$r.iH55Y3TpA3MJKo7DeMpu0n1h1nYEBsBltwWuQTHR1r9rN/.btUS', 'Admin', 0, '86135ae9-54e8-46a7-997c-f3dd345d8b5d48cada49fd53e8b20070', true, NOW(), true)
         SQL);
 
         $this->addSql(<<<'SQL'

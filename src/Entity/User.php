@@ -99,6 +99,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user_read'])]
     private Collection $vehicles;
 
+    #[ORM\Column]
+    private ?bool $isVerified = false;
+
 
     /**
      * @throws RandomException
@@ -380,6 +383,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $vehicle->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

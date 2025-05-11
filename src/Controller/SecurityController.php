@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\EcoRide;
-use App\Entity\Preferences;
 use App\Entity\User;
+use App\Factory\UserFactory;
+use App\Repository\UserRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use GdImage;
@@ -23,11 +24,16 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 
 #[Route('/api', name: 'app_api_')]
@@ -39,10 +45,14 @@ final class SecurityController extends AbstractController
         private readonly EntityManagerInterface      $manager,
         private readonly SerializerInterface         $serializer,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly UserFactory $userFactory,
     )
     {
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/registration', name: 'registration', methods: 'POST')]
     #[OA\Post(
         path:"/api/registration",
@@ -64,7 +74,7 @@ final class SecurityController extends AbstractController
                     new Property(
                         property: "password",
                         type: "string",
-                        example: "Mot de passe"
+                        example: "M0t de passe"
                     )], type: "object"))]
         ),
     )]
@@ -81,9 +91,14 @@ final class SecurityController extends AbstractController
         response: 409,
         description: 'Ce compte existe déjà'
     )]
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function register(MailerInterface $mailer, Request $request, UserPasswordHasherInterface $passwordHasher, VerifyEmailHelperInterface $verifyEmailHelper): JsonResponse
     {
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
+
+        //Vérification que les champs sont tous renseignés
+        if (null === $user->getPseudo() || null === $user->getPassword() || null === $user->getEmail()) {
+            return new JsonResponse(['error' => true, 'message' => 'Informations incomplètes'], Response::HTTP_BAD_REQUEST);
+        }
 
         //Vérification de l'existence de l'utilisateur pour ne pas avoir d'email en double
         $existingUser = $this->manager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
@@ -91,17 +106,17 @@ final class SecurityController extends AbstractController
             return new JsonResponse(['error' => true, 'message' => 'Ce compte existe déjà'], Response::HTTP_CONFLICT);
         }
 
-        if (null === $user->getPseudo()) {
-            return new JsonResponse(['error' => true, 'message' => 'Il manque le pseudo'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if (null === $user->getPassword()) {
-            return new JsonResponse(['error' => true, 'message' => 'Il faut un mot de passe !'], Response::HTTP_BAD_REQUEST);
-        }
+        //Validation de la complexité du mot de passe
         if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{10,}$/', $user->getPassword())) {
             return new JsonResponse(['message' => 'Le mot de passe doit contenir au moins 10 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'], Response::HTTP_BAD_REQUEST);
         }
 
+        // Création de l'utilisateur via la factory
+        $user = $this->userFactory->createUser(
+            $user->getEmail(),
+            $user->getPseudo(),
+            $passwordHasher->hashPassword(new User(), $user->getPassword())
+        );
 
         // Recherche de l'entité EcoRide avec le libelle "WELCOME_CREDIT"
         $ecoRide = $this->manager->getRepository(EcoRide::class)->findOneBy(['libelle' => 'WELCOME_CREDIT']);
@@ -110,35 +125,29 @@ final class SecurityController extends AbstractController
         // Attribution des crédits à l'utilisateur
         $user->setCredits($welcomeCredit);
 
-        //aucun roles ne peut être attribué à la création
-        $user->setRoles([]);
-
         $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-
-        //On ajoute 2 préférences 'smokingAllowed' et 'petsAllowed' avec en description 'no'
-        $smokingPreference = new Preferences();
-        $smokingPreference->setLibelle('smokingAllowed');
-        $smokingPreference->setDescription('no');
-        $smokingPreference->setUserPreferences($user);
-        $smokingPreference->setCreatedAt(new DateTimeImmutable());
-
-        $petsPreference = new Preferences();
-        $petsPreference->setLibelle('petsAllowed');
-        $petsPreference->setDescription('no');
-        $petsPreference->setUserPreferences($user);
-        $petsPreference->setCreatedAt(new DateTimeImmutable());
-        //Création des préférences pour le user
-        $this->manager->persist($smokingPreference);
-        $this->manager->persist($petsPreference);
-
-        //Association des préférences au user
-        $user->addPreference($smokingPreference);
-        $user->addPreference($petsPreference);
-
-        $user->setCreatedAt(new DateTimeImmutable());
 
         $this->manager->persist($user);
         $this->manager->flush();
+
+        //Envoie du mail de vérification
+        //Le tableau ['id' => $user->getId()] est pour inclure l'identifiant utilisateur,
+        //car le user n'est pas connecté lorsqu'il clique sur le lien puisqu'il ne peut pas se connecter tant qu'il n'est pas vérifié
+        $signatureComponents = $verifyEmailHelper->generateSignature(
+            'app_api_verify_email',
+            $user->getId(),
+            $user->getEmail(),
+            ['id' => $user->getId()]
+        );
+
+        $email = (new Email())
+            ->from('ecorideback@alwaysdata.net')
+            ->to($user->getEmail())
+            ->subject('Bienvenue chez EcoRide !')
+            ->text('Bonjour, ' . $user->getPseudo(). ', bienvenue chez nous !, veuillez copier/coller le lien suivant pour valider votre adresse email: '.$signatureComponents->getSignedUrl())
+            ->html('Bonjour, ' . $user->getPseudo(). ', bienvenue chez nous !, <br>Veuillez <a href="'.$signatureComponents->getSignedUrl().'">cliquer ic</a> pour valider votre adresse email');
+
+        $mailer->send($email);
 
         $responseData = $this->serializer->serialize(
             $user,
@@ -148,6 +157,37 @@ final class SecurityController extends AbstractController
 
         return new JsonResponse($responseData, Response::HTTP_CREATED, [], true);
     }
+
+    #[Route('/verify', name: 'verify_email', methods: 'GET')]
+    public function verifyUserEmail(Request $request, VerifyEmailHelperInterface $verifyEmailHelper, UserRepository $userRepository): JsonResponse|RedirectResponse
+    {
+        $user = $userRepository->find($request->query->get('id'));
+        if (!$user) {
+            return new JsonResponse(['error' => true, 'message' => 'Email inconnu'], Response::HTTP_BAD_REQUEST);
+        }
+        try {
+            $verifyEmailHelper->validateEmailConfirmation(
+                $request->getUri(),
+                $user->getId(),
+                $user->getEmail(),
+            );
+        } catch (VerifyEmailExceptionInterface $e) {
+            return new JsonResponse(['error' => true, 'message' => $e->getReason()], Response::HTTP_BAD_REQUEST);
+        }
+
+        $user->setIsVerified(true);
+        $this->manager->flush();
+
+        $responseData = $this->serializer->serialize(
+            $user,
+            'json',
+            ['groups' => ['user_login']]
+        );
+
+        return new JsonResponse($responseData, Response::HTTP_OK, [], true);
+    }
+
+
 
     #[Route('/login', name: 'login', methods: 'POST')]
     #[OA\Post(
@@ -182,6 +222,11 @@ final class SecurityController extends AbstractController
         //Si le user n'a pas le droit de se connecter
         if (!$user->isActive()) {
             return new JsonResponse(['error' => true, 'message' => 'Votre compte est désactivé. Veuillez nous contacter pour plus d\'informations'], Response::HTTP_FORBIDDEN);
+        }
+
+        //Si le user n'a pas validé son email
+        if (!$user->isVerified()) {
+            return new JsonResponse(['error' => true, 'message' => 'Vous devez valider votre email avant de pouvoir vous connecter'], Response::HTTP_FORBIDDEN);
         }
 
         $responseData = $this->serializer->serialize(
