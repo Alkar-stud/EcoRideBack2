@@ -1,9 +1,9 @@
 <?php
-// src/Enum/TripStatus.php
+// src/Enum/RideStatus.php
 
 namespace App\Enum;
 
-enum TripStatus: int
+enum RideStatus: int
 {
     case COMING = 1;
     case PROGRESSING = 2;
@@ -31,66 +31,66 @@ enum TripStatus: int
 
 namespace App\Controller;
 
-use App\Enum\TripStatus;
-use App\Entity\Notice;
+use App\Enum\RideStatus;
+use App\Entity\Ride;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class NoticeController extends AbstractController
+class RideController extends AbstractController
 {
-    #[Route('/api/notices/approve/{id}', name: 'approve_notice', methods: ['POST'])]
-    public function approveNotice(Notice $notice): Response
+    #[Route('/api/ride/approve/{id}', name: 'approve_ride', methods: ['POST'])]
+    public function approveRide(Ride $ride): Response
     {
         // Utilisation de l'enum
-        $notice->setStatus(TripStatus::APPROVED);
+        $ride->setStatus(RideStatus::APPROVED);
 
         // Traitement supplémentaire...
 
         return $this->json(['status' => 'success']);
     }
 
-    #[Route('/api/notices/pending', name: 'list_pending_notices', methods: ['GET'])]
-    public function listPendingNotices(): Response
+    #[Route('/api/ride/pending', name: 'list_pending_ride', methods: ['GET'])]
+    public function listPendingRide(): Response
     {
         // Rechercher par valeur d'enum
-        $pendingNotices = $this->getDoctrine()->getRepository(Notice::class)
-            ->findBy(['status' => TripStatus::PENDING]);
+        $pendingRide = $this->getDoctrine()->getRepository(Ride::class)
+            ->findBy(['status' => RideStatus::PENDING]);
 
-        return $this->json($pendingNotices);
+        return $this->json($pendingRide);
     }
 }
 */
 
-/* dans l'entité Notice
+/* dans l'entité Ride
 <?php
-// src/Entity/Trip.php
+// src/Entity/Ride.php
 
 namespace App\Entity;
 
-use App\Enum\TripStatus;
+use App\Enum\RideStatus;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class Notice
+class Ride
 {
     // ...
 
     #[ORM\Column(type: 'integer')]
-    private TripStatus $status;
+    private RideStatus $status;
 
     public function __construct()
     {
         // Valeur par défaut
-        $this->status = TripStatus::PENDING;
+        $this->status = RideStatus::PENDING;
     }
 
-    public function getStatus(): TripStatus
+    public function getStatus(): RideStatus
     {
         return $this->status;
     }
 
-    public function setStatus(TripStatus $status): self
+    public function setStatus(RideStatus $status): self
     {
         $this->status = $status;
         return $this;

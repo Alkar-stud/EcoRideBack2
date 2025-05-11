@@ -9,14 +9,14 @@ use MongoDB\Collection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class TripMongoService
+class RideMongoService
 {
     private Collection $collection;
 
     public function __construct(string $mongoUri, string $databaseName)
     {
         $client = new Client($mongoUri);
-        $this->collection = $client->selectCollection($databaseName, 'trips');
+        $this->collection = $client->selectCollection($databaseName, 'rides');
     }
 
     private function convertDatesToIsoFormat(array $data): array

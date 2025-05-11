@@ -27,7 +27,7 @@ enum NoticeStatus: int
 
 namespace App\Controller;
 
-use App\Enum\TripStatus;
+use App\Enum\RideStatus;
 use App\Entity\Notice;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +39,7 @@ class NoticeController extends AbstractController
     public function approveNotice(Notice $notice): Response
     {
         // Utilisation de l'enum
-        $notice->setStatus(TripStatus::APPROVED);
+        $notice->setStatus(RideStatus::APPROVED);
 
         // Traitement supplémentaire...
 
@@ -51,7 +51,7 @@ class NoticeController extends AbstractController
     {
         // Rechercher par valeur d'enum
         $pendingNotices = $this->getDoctrine()->getRepository(Notice::class)
-            ->findBy(['status' => TripStatus::PENDING]);
+            ->findBy(['status' => RideStatus::PENDING]);
 
         return $this->json($pendingNotices);
     }
@@ -60,11 +60,11 @@ class NoticeController extends AbstractController
 
 /* dans l'entité Notice
 <?php
-// src/Entity/Trip.php
+// src/Entity/Ride.php
 
 namespace App\Entity;
 
-use App\Enum\TripStatus;
+use App\Enum\RideStatus;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -73,20 +73,20 @@ class Notice
     // ...
 
     #[ORM\Column(type: 'integer')]
-    private TripStatus $status;
+    private RideStatus $status;
 
     public function __construct()
     {
         // Valeur par défaut
-        $this->status = TripStatus::PENDING;
+        $this->status = RideStatus::PENDING;
     }
 
-    public function getStatus(): TripStatus
+    public function getStatus(): RideStatus
     {
         return $this->status;
     }
 
-    public function setStatus(TripStatus $status): self
+    public function setStatus(RideStatus $status): self
     {
         $this->status = $status;
         return $this;

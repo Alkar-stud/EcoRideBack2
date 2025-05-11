@@ -2,37 +2,37 @@
 
 namespace App\Service;
 
-use App\Entity\TripStatus;
+use App\Entity\RideStatus;
 use App\Entity\Vehicle;
 use App\Repository\EcoRideRepository;
-use App\Repository\TripRepository;
-use App\Repository\TripStatusRepository;
+use App\Repository\RideRepository;
+use App\Repository\RideStatusRepository;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 
-class TripService
+class RideService
 {
     private EcoRideRepository $ecoRideRepository;
     private VehicleRepository $vehicleRepository;
-    private TripStatusRepository $tripStatusRepository;
-    private TripRepository $tripRepository;
+    private RideStatusRepository $rideStatusRepository;
+    private RideRepository $rideRepository;
 
     public function __construct(
         private readonly EntityManagerInterface  $manager,
         EcoRideRepository $ecoRideRepository,
         VehicleRepository $vehicleRepository,
-        TripStatusRepository $tripStatusRepository,
-        TripRepository $tripRepository,
+        RideStatusRepository $rideStatusRepository,
+        RideRepository $rideRepository,
     )
     {
         $this->ecoRideRepository = $ecoRideRepository;
         $this->vehicleRepository = $vehicleRepository;
-        $this->tripStatusRepository = $tripStatusRepository;
-        $this->tripRepository = $tripRepository;
+        $this->rideStatusRepository = $rideStatusRepository;
+        $this->rideRepository = $rideRepository;
     }
 
-    public function getDefaultStatus():  ?TripStatus
+    public function getDefaultStatus():  ?RideStatus
     {
         $ecoRide = $this->ecoRideRepository->findOneBy(['libelle' => 'DEFAULT_TRIP_STATUS_ID']);
 
@@ -41,12 +41,12 @@ class TripService
         }
 
         $statusId = $ecoRide->getParameters();
-        $statusRepository = $this->manager->getRepository(TripStatus::class);
+        $statusRepository = $this->manager->getRepository(RideStatus::class);
 
         return $statusRepository->find($statusId);
     }
 
-    public function getFinishedStatus():  ?TripStatus
+    public function getFinishedStatus():  ?RideStatus
     {
         $ecoRide = $this->ecoRideRepository->findOneBy(['libelle' => 'FINISHED_TRIP_STATUS_ID']);
 
@@ -55,12 +55,12 @@ class TripService
         }
 
         $statusId = $ecoRide->getParameters();
-        $statusRepository = $this->manager->getRepository(TripStatus::class);
+        $statusRepository = $this->manager->getRepository(RideStatus::class);
 
         return $statusRepository->find($statusId);
     }
 
-    public function getTripVehicle($vehicleId, $user): ?Vehicle
+    public function getRideVehicle($vehicleId, $user): ?Vehicle
     {
         $vehicle = $this->vehicleRepository->findOneBy(['id' => $vehicleId]);
 
@@ -78,7 +78,7 @@ class TripService
 
     public function getPossibleStatus(): array
     {
-        $statuses = $this->tripStatusRepository->findAll();
+        $statuses = $this->rideStatusRepository->findAll();
         $result['all'] = 'all';
         foreach (($statuses) as $status) {
             $result[$status->getCode()] = $status->getId();
@@ -121,7 +121,7 @@ class TripService
         }
 
         //Récupération de l'entité
-        $covoiturage = $this->tripRepository->findOneBy(['id' => $id, 'owner' => $user->getId()]);
+        $covoiturage = $this->rideRepository->findOneBy(['id' => $id, 'owner' => $user->getId()]);
         //Si le covoiturage n'existe pas
         if (!$covoiturage) {
             return ['error' => 'unknown_covoiturage', "message" => 'Ce covoiturage n\'existe pas'];

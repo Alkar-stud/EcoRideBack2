@@ -102,6 +102,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $isVerified = false;
 
+    /**
+     * @var Collection<int, Ride>
+     */
+    #[ORM\OneToMany(targetEntity: Ride::class, mappedBy: 'driver', orphanRemoval: true)]
+    private Collection $ridesDriver;
+
 
     /**
      * @throws RandomException
@@ -115,6 +121,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         //$this->tripsUsers = new ArrayCollection();
         //$this->noticesPublisher = new ArrayCollection();
         //$this->noticesToValidate = new ArrayCollection();
+        $this->ridesDriver = new ArrayCollection();
 
     }
 
@@ -395,6 +402,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Ride>
+     */
+    public function getRidesDriver(): Collection
+    {
+        return $this->ridesDriver;
+    }
+
+    public function addRidesDriver(Ride $ridesDriver): static
+    {
+        if (!$this->ridesDriver->contains($ridesDriver)) {
+            $this->ridesDriver->add($ridesDriver);
+            $ridesDriver->setDriver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRidesDriver(Ride $ridesDriver): static
+    {
+        if ($this->ridesDriver->removeElement($ridesDriver)) {
+            // set the owning side to null (unless already changed)
+            if ($ridesDriver->getDriver() === $this) {
+                $ridesDriver->setDriver(null);
+            }
+        }
 
         return $this;
     }
