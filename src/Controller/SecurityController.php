@@ -29,6 +29,7 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
+
 #[Route('/api', name: 'app_api_')]
 #[OA\Tag(name: 'User')]
 #[Areas(["default"])]
@@ -208,6 +209,7 @@ final class SecurityController extends AbstractController
     )]
     public function me(#[CurrentUser] ?User $user): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
         if (null === $user) {
             return new JsonResponse(['error' => true, 'message' => 'Missing credentials'], Response::HTTP_UNAUTHORIZED);
         }
