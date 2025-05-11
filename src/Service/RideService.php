@@ -2,11 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\RideStatus;
+use App\Enum\RideStatus;
 use App\Entity\Vehicle;
 use App\Repository\EcoRideRepository;
 use App\Repository\RideRepository;
-use App\Repository\RideStatusRepository;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -15,20 +14,17 @@ class RideService
 {
     private EcoRideRepository $ecoRideRepository;
     private VehicleRepository $vehicleRepository;
-    private RideStatusRepository $rideStatusRepository;
     private RideRepository $rideRepository;
 
     public function __construct(
         private readonly EntityManagerInterface  $manager,
         EcoRideRepository $ecoRideRepository,
         VehicleRepository $vehicleRepository,
-        RideStatusRepository $rideStatusRepository,
         RideRepository $rideRepository,
     )
     {
         $this->ecoRideRepository = $ecoRideRepository;
         $this->vehicleRepository = $vehicleRepository;
-        $this->rideStatusRepository = $rideStatusRepository;
         $this->rideRepository = $rideRepository;
     }
 

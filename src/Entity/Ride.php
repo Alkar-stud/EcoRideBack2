@@ -13,61 +13,61 @@ class Ride
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?string $startingAddress = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?string $arrivalAddress = null;
 
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?DateTimeImmutable $startingAt = null;
 
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?int $duration = null;
 
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?int $cost = null;
 
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?int $maxNbPlaces = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?DateTimeImmutable $actualDepartureAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?DateTimeImmutable $actualArrivalAt = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'ridesDriver')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?User $driver = null;
 
     #[ORM\ManyToOne(inversedBy: 'rides')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?Vehicle $vehicle = null;
 
     #[ORM\Column]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['trip_read'])]
+    #[Groups(['ride_read'])]
     private ?DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
