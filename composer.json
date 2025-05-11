@@ -34,7 +34,7 @@
         "symfony/twig-bundle": "7.2.*",
         "symfony/validator": "7.2.*",
         "symfony/yaml": "7.2.*",
-        "symfonycasts/verify-email-bundle": "^1.17",
+        "symfonycasts/verify-email-bundle": "^1.17.3",
         "twig/extra-bundle": "^2.12|^3.21",
         "twig/twig": "^2.12|^3.21.1"
     },
@@ -46,6 +46,16 @@
         },
         "bump-after-update": true,
         "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src\/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests\/"
+        }
     },
     "replace": {
         "symfony\/polyfill-ctype": "*",
