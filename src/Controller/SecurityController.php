@@ -145,7 +145,7 @@ final class SecurityController extends AbstractController
             ->to($user->getEmail())
             ->subject('Bienvenue chez EcoRide !')
             ->text('Bonjour, ' . $user->getPseudo(). ', bienvenue chez nous !, veuillez copier/coller le lien suivant pour valider votre adresse email: '.$signatureComponents->getSignedUrl())
-            ->html('Bonjour, ' . $user->getPseudo(). ', bienvenue chez nous !, <br>Veuillez <a href="'.$signatureComponents->getSignedUrl().'">cliquer ic</a> pour valider votre adresse email');
+            ->html('Bonjour, ' . $user->getPseudo(). ', bienvenue chez nous !, <br>Veuillez <a href="'.$signatureComponents->getSignedUrl().'">cliquer ici</a> pour valider votre adresse email');
 
         $mailer->send($email);
 
