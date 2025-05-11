@@ -159,6 +159,11 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/verify', name: 'verify_email', methods: 'GET')]
+    #[Areas(["ecoride"])]
+    #[OA\Get(
+        path:"/api/verify",
+        summary:"Vérification de l'email"
+    )]
     public function verifyUserEmail(Request $request, VerifyEmailHelperInterface $verifyEmailHelper, UserRepository $userRepository): JsonResponse|RedirectResponse
     {
         $user = $userRepository->find($request->query->get('id'));
