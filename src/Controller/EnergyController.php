@@ -68,6 +68,7 @@ final class EnergyController extends AbstractController{
     )]
     public function add(Request $request): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
         /** @var Energy $energy */
         $energy = $this->serializer->deserialize($request->getContent(), Energy::class, 'json');
         $energy->setCreatedAt(new DateTimeImmutable());
