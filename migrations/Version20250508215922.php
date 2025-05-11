@@ -47,6 +47,9 @@ final class Version20250508215922 extends AbstractMigration
         $this->addSql(<<<'SQL'
             ALTER TABLE vehicle ADD CONSTRAINT FK_1B80E4867E3C61F9 FOREIGN KEY (owner_id) REFERENCES `user` (id)
         SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE `preferences` DROP FOREIGN KEY `FK_E931A6F51748B0EE`; ALTER TABLE `preferences` ADD CONSTRAINT `FK_E931A6F51748B0EE` FOREIGN KEY (`user_preferences_id`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        SQL);
     }
 
     public function down(Schema $schema): void
